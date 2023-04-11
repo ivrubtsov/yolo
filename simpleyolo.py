@@ -3,10 +3,11 @@ import cv2
 
 cropCoords = [100,100,500,500]
 fileSource = 'test_video.mp4'
+fileTarget = 'test_video_processed.mp4'
 
 model = YOLO("yolov8n.pt")  # load a pretrained model
 
-def processVideo(fileSource):
+def processVideo(fileSource, fileTarget):
     vidCapture = cv2.VideoCapture(fileSource)
     fps = vidCapture.get(cv2.CAP_PROP_FPS)
     totalFrames = vidCapture.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -51,18 +52,18 @@ def processVideo(fileSource):
         print("Frame: "+str(frameCounter))
         frameCounter = frameCounter+1
         
-        results = model.predict(source=im, conf=MODEL_CONFIDENCE, iou=MODEL_INTERSECTION, show=False, hide_labels=True, hide_conf=True, vid_stride=False, visualize=False)
-        boxes = results[0].boxes
-        box = closestBox(boxes, boxCenter(lastBoxCoords))  # returns the best box
-        lastBoxCoords = box.xyxy[0].numpy().astype(int)
-        newCoords = adjustBoxSize(box.xyxy[0].numpy().astype(int), box_width, box_height)
-        [newCoords, stepLevelX, stepLevelY, directionX, directionY] = smoothMove(newCoords, lastCoords, stepLevelX, stepLevelY, directionX, directionY)
-        newCoords = adjustBoundaries(newCoords,[width, height]) # don't allow to get the crop area go out of edges
-        [box_left, box_top, box_right, box_bottom] = newCoords
-        #print("left=",box_left," top=",box_top,"right=",box_right,"bottom=",box_bottom)
-        imCropped = im[box_top:box_bottom, box_left:box_right]
-        outputWriter[0].write(imCropped)
-        lastCoords = newCoords
+    results = model.predict(source=im, conf=MODEL_CONFIDENCE, iou=MODEL_INTERSECTION, show=False, hide_labels=True, hide_conf=True, vid_stride=False, visualize=False)
+    boxes = results[0].boxes
+    box = closestBox(boxes, boxCenter(lastBoxCoords))  # returns the best box
+    lastBoxCoords = box.xyxy[0].numpy().astype(int)
+    newCoords = adjustBoxSize(box.xyxy[0].numpy().astype(int), box_width, box_height)
+    [newCoords, stepLevelX, stepLevelY, directionX, directionY] = smoothMove(newCoords, lastCoords, stepLevelX, stepLevelY, directionX, directionY)
+    newCoords = adjustBoundaries(newCoords,[width, height]) # don't allow to get the crop area go out of edges
+    [box_left, box_top, box_right, box_bottom] = newCoords
+    #print("left=",box_left," top=",box_top,"right=",box_right,"bottom=",box_bottom)
+    imCropped = im[box_top:box_bottom, box_left:box_right]
+    outputWriter[0].write(imCropped)
+    lastCoords = newCoords
 
     outputWriter[0].release()
 
