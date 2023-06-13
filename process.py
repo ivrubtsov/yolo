@@ -5,7 +5,7 @@ import time
 import math
 import urllib.request
 
-model = YOLO("yolov8n.pt")  # load a pretrained model (recommended for training)
+model = YOLO("yolov8s.pt")  # load a pretrained model (recommended for training)
 
 # Constants:
 FILE_TYPE_VIDEO = 'video'
@@ -17,7 +17,7 @@ FILE_SOURCE_S3 = 's3'
 # Environment variables:
 TMP_DIR = os.getenv('TMP_DIR')
 if not TMP_DIR:
-    TMP_DIR = '/Users/irubtsov/Documents/Cerebriam/Git/trackingWebAppv2'
+    TMP_DIR = '/tmp'
 MODEL_STEP_INITIAL = os.getenv('MODEL_STEP_INITIAL')
 if not MODEL_STEP_INITIAL:
     MODEL_STEP_INITIAL = 1
